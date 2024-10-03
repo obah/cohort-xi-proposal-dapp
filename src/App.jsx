@@ -74,6 +74,7 @@ function App() {
 
     readOnlyProposalContract.on("ProposalCreated", fetchProposals);
     readOnlyProposalContract.on("Voted", fetchProposals);
+    readOnlyProposalContract.on("ProposalExecuted", fetchProposals);
 
     return () => {
       readOnlyProposalContract.removeListener(
@@ -82,6 +83,11 @@ function App() {
       );
 
       readOnlyProposalContract.removeListener("Voted", fetchProposals);
+
+      readOnlyProposalContract.removeListener(
+        "ProposalExecuted",
+        fetchProposals
+      );
     };
   }, [fetchProposals, readOnlyProposalContract]);
 

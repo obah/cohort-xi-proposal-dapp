@@ -10,12 +10,13 @@ export function useExecuteProposal(proposalId) {
   const { address } = useAppKitAccount();
   const { chainId } = useAppKitNetwork();
 
-  const vote = useCallback(async () => {
+  const executeProposal = useCallback(async () => {
     try {
       if (!address) {
         toast.error("Connect your wallet!");
         return;
       }
+
       if (Number(chainId) !== liskSepoliaNetwork.chainId) {
         toast.error("You are not connected to the right network");
         return;
@@ -28,21 +29,21 @@ export function useExecuteProposal(proposalId) {
         return;
       }
 
-      const voteTx = await contract.vote(proposalId);
+      const executeTx = await contract.executeProposal(proposalId);
 
-      const receipt = await voteTx.wait();
+      const receipt = await executeTx.wait();
 
       if (receipt.status === 1) {
-        toast.success("Vote successful");
+        toast.success("Execution successful");
         return;
       }
-      toast.error("Vote failed");
+      toast.error("Execution failed");
       return;
     } catch (error) {
       console.error(error);
-      toast.error("Voting failed!");
+      toast.error("Execution error!");
     }
   }, [address, chainId, contract, proposalId]);
 
-  return { vote };
+  return { executeProposal };
 }

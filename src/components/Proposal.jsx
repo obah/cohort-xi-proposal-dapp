@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Text } from "@radix-ui/themes";
 import { formatEther } from "ethers";
 import { useVote } from "../hooks/useVote";
+import { useExecuteProposal } from "../hooks/useExecuteProposal";
 
 const Proposal = ({
   id,
@@ -12,6 +13,8 @@ const Proposal = ({
   executed,
 }) => {
   const { vote } = useVote(id);
+
+  const { executeProposal } = useExecuteProposal(id);
 
   return (
     <Box className="bg-slate-400 rounded-md shadow-sm p-4 w-96">
@@ -45,7 +48,10 @@ const Proposal = ({
         </Flex>
       </Box>
       {votecount >= minRequiredVote ? (
-        <Button className="bg-green-400 text-white font-bold w-full mt-4 p-4 rounded-md shadow-sm">
+        <Button
+          className="bg-green-400 text-white font-bold w-full mt-4 p-4 rounded-md shadow-sm"
+          onClick={executeProposal}
+        >
           Execute
         </Button>
       ) : (
