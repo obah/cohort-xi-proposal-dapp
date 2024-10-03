@@ -1,11 +1,7 @@
-import { Box } from "@radix-ui/themes";
-import Layout from "./components/Layout";
-import CreateProposalModal from "./components/CreateProposalModal";
-import Proposals from "./components/Proposals";
-import useContract from "./hooks/useContract";
 import { useCallback, useEffect, useState } from "react";
 import { Contract } from "ethers";
 import useRunners from "./hooks/useRunners";
+import useContract from "./hooks/useContract";
 import { Interface } from "ethers";
 import ABI from "./ABI/proposal.json";
 
@@ -13,10 +9,11 @@ const multicallAbi = [
   "function tryAggregate(bool requireSuccess, (address target, bytes callData)[] calls) returns ((bool success, bytes returnData)[] returnData)",
 ];
 
-function App() {
+export function useFetchProposals() {
+  const [proposals, setProposals] = useState([]);
+
   const readOnlyProposalContract = useContract();
   const { readOnlyProvider } = useRunners();
-  const [proposals, setProposals] = useState([]);
 
   const fetchProposals = useCallback(async () => {
     if (!readOnlyProposalContract) return;
@@ -53,8 +50,7 @@ function App() {
         itf.decodeFunctionResult("proposals", res.returnData)
       );
 
-      const data = decodedResults.map((proposalStruct, index) => ({
-        id: index + 1,
+      const data = decodedResults.map((proposalStruct) => ({
         description: proposalStruct.description,
         amount: proposalStruct.amount,
         minRequiredVote: proposalStruct.minVotesToPass,
@@ -71,28 +67,7 @@ function App() {
 
   useEffect(() => {
     fetchProposals();
+  }, []);
 
-    readOnlyProposalContract.on("ProposalCreated", fetchProposals);
-    readOnlyProposalContract.on("Voted", fetchProposals);
-
-    return () => {
-      readOnlyProposalContract.removeListener(
-        "ProposalCreated",
-        fetchProposals
-      );
-
-      readOnlyProposalContract.removeListener("Voted", fetchProposals);
-    };
-  }, [fetchProposals, readOnlyProposalContract]);
-
-  return (
-    <Layout>
-      <Box className="flex justify-end p-4">
-        <CreateProposalModal />
-      </Box>
-      <Proposals proposals={proposals} />
-    </Layout>
-  );
+  return { proposals };
 }
-
-export default App;
