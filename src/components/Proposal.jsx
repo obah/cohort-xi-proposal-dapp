@@ -44,12 +44,18 @@ const Proposal = ({
           <Text className="font-bold">{String(executed)}</Text>
         </Flex>
       </Box>
-      <Button
-        className="bg-blue-500 text-white font-bold w-full mt-4 p-4 rounded-md shadow-sm"
-        onClick={vote}
-      >
-        Vote
-      </Button>
+      {votecount >= minRequiredVote ? (
+        <Button className="bg-green-400 text-white font-bold w-full mt-4 p-4 rounded-md shadow-sm">
+          Execute
+        </Button>
+      ) : (
+        <Button
+          className="bg-blue-500 text-white font-bold w-full mt-4 p-4 rounded-md shadow-sm"
+          onClick={vote}
+        >
+          Vote
+        </Button>
+      )}
     </Box>
   );
 };
